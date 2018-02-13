@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div class="notification-icon" style="margin-top:10px">
+    <span class="glyphicon glyphicon-envelope"></span>
+    <span class="badge" id="ntCnt" ></span>
+</div>
+
+<div id="divNotification">
+</div>
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+<script src="/signalr/hubs/"></script>
+<script>
+    $(document).ready(function () {
+        var hub = $.connection.myNewHub;
+        hub.client.displayStatus = function () {
+            getData();
+        };
+        //
+      
+        //
+        $.connection.hub.start();
+        getData();
+
+        function getData()
+        {
+            var divNotification = $('#divNotification');
+            $.ajax({
+                url: '/Notification/GetNotification',
+                type: 'GET',
+                datatype: 'json',
+                success: function (data) {
+                    data = $.parseJSON(data);
+                    if (data.length > 0) {
+                        divNotification.empty();
+                        //
+                        $('#ntCnt').text(data.length);
+                        //
+                        for (var i = 0; i < data.length; i++) {
+                            var notification = '<div class="alert alert-success alert-dismissable">' +
+                                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+                                + data[i].Status + "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; " + data[i].Message + "&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; " 
+                                '</div>'
+                            divNotification.append(notification);
+                        }
+                    }
+                }, error: function (r, e, w) {
+                }
+            })
+        }
+    });
+</script>
